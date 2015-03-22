@@ -42,6 +42,14 @@ function getAllParks(){
 	return $parks;
 }
 
+function getParkByID($id){
+	
+	$db = new Database();
+
+	$sql = "SELECT * FROM parks WHERE ID = '". $id ."'";
+	
+}
+
 $namespace = "http://localhost/i-park/trunk/Services/parksService.php";
 $server = new soap_server();
 $server->configureWSDL("parksService", $namespace);

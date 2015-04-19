@@ -20,6 +20,7 @@ function getAllParks(){
 		echo "<h2>Fault</h2><pre>";
 		print_r($result);
 		echo "</pre>";
+		echo "#1";
 		
 	} else {
 		

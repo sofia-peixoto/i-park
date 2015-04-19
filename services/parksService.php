@@ -165,8 +165,8 @@ $server->register("helloWorld",
 	
 // Get our posted data if the service is being consumed
 // otherwise leave this data blank.                
-$POST_DATA = isset($GLOBALS['HTTP_RAW_POST_DATA']) 
-                ? $GLOBALS['HTTP_RAW_POST_DATA'] : '';
+$POST_DATA = isset($HTTP_RAW_POST_DATA) 
+                ? $HTTP_RAW_POST_DATA : '';
 
-$server->service($POST_DATA);
+@$server->service($POST_DATA);
 ?>

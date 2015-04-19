@@ -6,7 +6,6 @@ header('Content-Type: text/html; charset=utf-8');
 //http://localhost:82/i-park/trunk/client.php
 
 function getAllParks(){
-	
 	$client = new nusoap_client("http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php?wsdl", true);
 	$error  = $client->getError();
 	 

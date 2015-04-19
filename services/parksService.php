@@ -96,9 +96,11 @@ function getParkByID($id){
 
 }*/
 
-$namespace = ("http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php");
+$namespace = "http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php";
 $server = new soap_server();
-$server->configureWSDL("parksService", $namespace);
+$server->configureWSDL("ParksService");
+$server->wsdl->schemaTargetNamespace = $namespace;
+
 
 //Tipo: Park
 $server->wsdl->addComplexType('Park','park','struct','all','',
@@ -126,7 +128,7 @@ $server->wsdl->addComplexType('Park','park','struct','all','',
 $server->wsdl->addComplexType('ParksArray','parksArray','array','','SOAP-ENC:Array',
 	array(), 
 	array(
-        array('ref'=>'SOAP-ENC:arrayType','wsdl:arrayType'=>'tns:Parks[]')
+        array('ref'=>'SOAP-ENC:arrayType','wsdl:arrayType'=>'tns:Park[]')
     ),
     'tns:Park');
 
@@ -161,5 +163,10 @@ $server->register("helloWorld",
     "encoded",
     "Hello World");
 	
-@$server->service($HTTP_RAW_POST_DATA);
+// Get our posted data if the service is being consumed
+// otherwise leave this data blank.                
+$POST_DATA = isset($GLOBALS['HTTP_RAW_POST_DATA']) 
+                ? $GLOBALS['HTTP_RAW_POST_DATA'] : '';
+
+$server->service($POST_DATA);
 ?>

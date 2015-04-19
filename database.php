@@ -14,6 +14,7 @@ class Database {
  
 			$this->handler = new PDO("mysql:host=$this->serverName;dbname=$this->serverDB", $this->serverUser, $this->serverPass);
 			$this->handler->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->handler->exec("SET NAMES UTF8");
 		
 		}
 		catch(PDOException $e)

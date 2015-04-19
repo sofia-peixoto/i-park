@@ -1,4 +1,6 @@
 <?php
+//http://www.codeproject.com/Articles/140189/PHP-NuSOAP-Tutorial
+
 require_once('../database.php');
 require_once('../entities/park.php');
 require_once('../plugins/nusoap/lib/nusoap.php');
@@ -7,6 +9,7 @@ function helloWorld(){
 	return "Hello World!";
 }
 
+//http://localhost:82/i-park/trunk/services/parksService.php/getAllParks?wsdl
 function getAllParks(){
 	$db = new Database();
 
@@ -42,15 +45,58 @@ function getAllParks(){
 	return $parks;
 }
 
+//http://localhost:82/i-park/trunk/services/parksService.php/getParkByID?wsdl
 function getParkByID($id){
 	
 	$db = new Database();
 
-	$sql = "SELECT * FROM parks WHERE ID = '". $id ."'";
+	$sql = "SELECT * FROM parks WHERE ID = :id";
+	$stmt = $db->handler->prepare($sql);
+	$stmt->bindParam(':id', $id);
 	
+	$stmt-> execute();
+	
+	$result = $stmt->fetch();
+	
+	return $result;
 }
 
-$namespace = "http://localhost/i-park/trunk/Services/parksService.php";
+/*function insertNewPark($park){
+	
+	$db = new Database();
+
+	$sql = "INSERT INTO parks ";
+	$sql +=	"('Name','Company','Address','ZIPCode','ZIPLocation','Country','Latitude','Longitude', ";
+	$sql +=	"'Phone','OpeningHour','ClosingHour','PricePerHour','Floors','DisabledPlaces','Capacity','CreationDate') ";
+	$sql +=	"VALUES ";
+	$sql +=	"(:name, :company, :address, :zipcode, :ziplocation, :country, :latitude, :longitude, ";
+	$sql +=	":phone, :openingHour, :closingHour, :pricePerHour, :floors, :disabledPlaces, :capacity, NOW());";
+	
+	$stmt = $db->handler->prepare($sql);
+	$stmt->bindParam(':name', $id);
+	$stmt->bindParam(':company', $id);
+	$stmt->bindParam(':address', $id);
+	$stmt->bindParam(':zipcode', $id);
+	$stmt->bindParam(':ziplocation', $id);
+	$stmt->bindParam(':country', $id);
+	$stmt->bindParam(':latitude', $id);
+	$stmt->bindParam(':longitude', $id);
+	$stmt->bindParam(':id', $id);
+	$stmt->bindParam(':id', $id);
+	$stmt->bindParam(':id', $id);
+	$stmt->bindParam(':id', $id);
+	$stmt->bindParam(':id', $id);
+	$stmt->bindParam(':id', $id);
+	$stmt->bindParam(':id', $id);
+	$stmt->bindParam(':id', $id);
+	
+	$stmt-> execute();
+	
+	
+
+}*/
+
+$namespace = ("http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php");
 $server = new soap_server();
 $server->configureWSDL("parksService", $namespace);
 
@@ -94,6 +140,17 @@ $server->register("getAllParks",
     "encoded",
     "Get All Parks");
 
+//Operacao: getParkByID
+$server->register("getParkByID",
+    array("id" => "xsd:string"),
+    array("return" => "tns:Park"),
+    $namespace,
+    false,
+    "rpc",
+    "encoded",
+    "Get Park By ID");
+
+	
 //Operacao: helloWorld
 $server->register("helloWorld",	
     array(),

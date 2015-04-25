@@ -61,40 +61,63 @@ function getParkByID($id){
 	return $result;
 }
 
-/*function insertNewPark($park){
+//http://localhost:82/i-park/trunk/services/parksService.php/insertNewPark?wsdl
+function insertNewPark($park){
 	
-	$db = new Database();
+	try {
+		
+		$db = new Database();
 
-	$sql = "INSERT INTO parks ";
-	$sql +=	"('Name','Company','Address','ZIPCode','ZIPLocation','Country','Latitude','Longitude', ";
-	$sql +=	"'Phone','OpeningHour','ClosingHour','PricePerHour','Floors','DisabledPlaces','Capacity','CreationDate') ";
-	$sql +=	"VALUES ";
-	$sql +=	"(:name, :company, :address, :zipcode, :ziplocation, :country, :latitude, :longitude, ";
-	$sql +=	":phone, :openingHour, :closingHour, :pricePerHour, :floors, :disabledPlaces, :capacity, NOW());";
+		$sql = "INSERT INTO parks ";
+		$sql = $sql . "('Name','Company','Address','ZIPCode','ZIPLocation','Country','Latitude','Longitude', ";
+		$sql = $sql . "'Phone','OpeningHour','ClosingHour','PricePerHour','Floors','DisabledPlaces','Capacity','CreationDate') ";
+		$sql = $sql . "VALUES ";
+		$sql = $sql . "(:name, :company, :address, :zipcode, :ziplocation, :country, :latitude, :longitude, ";
+		$sql = $sql . ":phone, :openingHour, :closingHour, :pricePerHour, :floors, :disabledPlaces, :capacity, NOW());";
+		
+		$stmt = $db->handler->prepare($sql);
+		
+		$sqlParams = Array(':name' => $park["Name"], ':company' => $park["Company"], ':address' => $park["Address"], ':zipcode' => $park["ZIPCode"], ':ziplocation' => $park["ZIPLocation"], ':country' => $park["Country"], ':latitude' => $park["Latitude"], ':longitude' => $park["Longitude"], ':phone'=> $park["Phone"], ':openingHour' => $park["OpeningHour"], ':closingHour' => $park["ClosingHour"], ':pricePerHour' => $park["PricePerHour"], ':floors' => $park["Floors"], ':disabledPlaces' => $park["DisabledPlaces"], ':capacity' => $park["Capacity"]);
+		
+		return "Name " . $park . "<br>" . parms($sql, $sqlParams);
+		
+		$stmt->bindParam(':name', $park["Name"]);
+		$stmt->bindParam(':company', $park["Company"]);
+		$stmt->bindParam(':address', $park["Address"]);
+		$stmt->bindParam(':zipcode', $park["ZIPCode"]);
+		$stmt->bindParam(':ziplocation', $park["ZIPLocation"]);
+		$stmt->bindParam(':country', $park["Country"]);
+		$stmt->bindParam(':latitude', $park["Latitude"]);
+		$stmt->bindParam(':longitude', $park["Longitude"]);
+		$stmt->bindParam(':phone', $park["Phone"]);
+		$stmt->bindParam(':openingHour', $park["OpeningHour"]);
+		$stmt->bindParam(':closingHour', $park["ClosingHour"]);
+		$stmt->bindParam(':pricePerHour', $park["PricePerHour"]);
+		$stmt->bindParam(':floors', $park["Floors"]);
+		$stmt->bindParam(':disabledPlaces', $park["DisabledPlaces"]);
+		$stmt->bindParam(':capacity', $park["Capacity"]);
+		
+		$stmt->execute();
+		
+	} catch (Exception $e) {
+		
+		return "Exception " . $e;
+		
+	}
 	
-	$stmt = $db->handler->prepare($sql);
-	$stmt->bindParam(':name', $id);
-	$stmt->bindParam(':company', $id);
-	$stmt->bindParam(':address', $id);
-	$stmt->bindParam(':zipcode', $id);
-	$stmt->bindParam(':ziplocation', $id);
-	$stmt->bindParam(':country', $id);
-	$stmt->bindParam(':latitude', $id);
-	$stmt->bindParam(':longitude', $id);
-	$stmt->bindParam(':id', $id);
-	$stmt->bindParam(':id', $id);
-	$stmt->bindParam(':id', $id);
-	$stmt->bindParam(':id', $id);
-	$stmt->bindParam(':id', $id);
-	$stmt->bindParam(':id', $id);
-	$stmt->bindParam(':id', $id);
-	$stmt->bindParam(':id', $id);
-	
-	$stmt-> execute();
-	
-	
+	return "ok";
+}
 
-}*/
+//esta função permite obter a query final de uma prepared statement
+function parms($string,$data) {
+	$indexed=$data==array_values($data);
+	foreach($data as $k=>$v) {
+		if(is_string($v)) $v="'$v'";
+		if($indexed) $string=preg_replace('/\?/',$v,$string,1);
+		else $string=str_replace("$k",$v,$string);
+	}
+	return $string;
+}
 
 $namespace = "http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php";
 $server = new soap_server();
@@ -152,6 +175,15 @@ $server->register("getParkByID",
     "encoded",
     "Get Park By ID");
 
+//Operacao: insertNewPark
+$server->register("insertNewPark",
+    array("park" => "tns:Park"),
+    array("return" => "xsd:string"),
+    $namespace,
+    false,
+    "rpc",
+    "encoded",
+    "Insert a New Park");
 	
 //Operacao: helloWorld
 $server->register("helloWorld",	

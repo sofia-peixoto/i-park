@@ -105,6 +105,22 @@ function insertNewPark($id, $name, $company, $address, $zipCode, $zipLocation, $
 	
 }
 
+function getCurrentStocking($id){
+	
+	$db = new Database();
+
+	$sql = "SELECT Value FROM stocking WHERE ParkID = :id ORDER BY Date DESC LIMIT 1";
+	$stmt = $db->handler->prepare($sql);
+	$stmt->bindParam(':id', $id);
+	
+	$stmt-> execute();
+	
+	$result = $stmt->fetch();
+	
+	return $result["Value"];
+	
+}
+
 //esta função permite obter a query final de uma prepared statement
 function parms($string,$data) {
 	$indexed=$data==array_values($data);
@@ -181,6 +197,16 @@ $server->register("insertNewPark",
     "rpc",
     "encoded",
     "Insert a New Park");
+
+//Operacao: getCurrentStocking
+$server->register("getCurrentStocking",
+    array("id" => "xsd:string"),
+    array("return" => "xsd:string"),
+    $namespace,
+    false,
+    "rpc",
+    "encoded",
+    "Get Current Stocking");
 	
 //Operacao: helloWorld
 $server->register("helloWorld",	

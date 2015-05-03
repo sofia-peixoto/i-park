@@ -113,7 +113,7 @@ function getCurrentStocking(){
 		echo "<h2>Constructor error</h2><pre>" . $error . "</pre>";
 	}
 	 
-	$result = $client->call("getCurrentStocking", array('id' => '2'));
+	$result = $client->call("getCurrentStocking", array('id' => '3'));
 	
 	if ($client->fault) {
 		
@@ -137,11 +137,44 @@ function getCurrentStocking(){
 	
 }
 
+function insertStocking(){
+	
+	$park = Array('ParkID' => '3', 'Value' => '4', 'Date' => '');
+	
+	$client = new nusoap_client("http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php?wsdl", false);
+	$error  = $client->getError();
+	 
+	if ($error) {
+		echo "<h2>Constructor error</h2><pre>" . $error . "</pre>";
+	}
+	
+	$result = $client->call("insertStocking", $park);
+	
+	if ($client->fault) {
+		
+		echo "<h2>Fault</h2><pre>";
+		print_r($result);
+		echo "</pre>";
+		
+	} else {
+		
+		$error = $client->getError();
+		
+		if ($error) {
+			echo "<h2>Error</h2><pre>" . $error . "</pre>";
+		} else {
+			print_r($result);
+		}
+		
+	}
+	
+}
 
 //getAllparks();
 //getParkByID();
 //insertNewPark();
 getCurrentStocking();
+//insertStocking();
 
 //echo "<h2>Request</h2><pre>" . htmlspecialchars($client->request, ENT_QUOTES) . "</pre>";
 //echo "<h2>Response</h2><pre>" . htmlspecialchars($client->response, ENT_QUOTES) . "</pre>";

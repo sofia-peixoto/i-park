@@ -105,11 +105,12 @@ function insertNewPark($id, $name, $company, $address, $zipCode, $zipLocation, $
 	
 }
 
+//http://localhost:82/i-park/trunk/services/parksService.php/getCurrentStocking?wsdl
 function getCurrentStocking($id){
 	
 	$db = new Database();
 
-	$sql = "SELECT Value FROM stocking WHERE ParkID = :id ORDER BY Date DESC LIMIT 1";
+	$sql = "SELECT * FROM stocking WHERE ParkID = :id ORDER BY Date DESC LIMIT 1";
 	$stmt = $db->handler->prepare($sql);
 	$stmt->bindParam(':id', $id);
 	
@@ -117,7 +118,36 @@ function getCurrentStocking($id){
 	
 	$result = $stmt->fetch();
 	
-	return $result["Value"];
+	return $result;
+	
+}
+
+//http://localhost:82/i-park/trunk/services/parksService.php/insertStocking?wsdl
+function insertStocking($parkid, $value, $date){
+	
+	try {
+		
+		$db = new Database();
+
+		$sql = "INSERT INTO stocking ";
+		$sql = $sql . "(ParkID,Value,`Date`) ";
+		$sql = $sql . "VALUES ";
+		$sql = $sql . "(:parkid, :value, NOW());";
+		
+		$stmt = $db->handler->prepare($sql);
+		
+		$stmt->bindParam(':parkid', $parkid);
+		$stmt->bindParam(':value', $value);
+		
+		$stmt->execute();
+		
+	} catch (Exception $e) {
+		
+		return "Exception " . $e;
+		
+	}
+	
+	return "OK";
 	
 }
 
@@ -168,6 +198,14 @@ $server->wsdl->addComplexType('ParksArray','parksArray','array','','SOAP-ENC:Arr
     ),
     'tns:Park');
 
+//Tipo: Stocking
+$server->wsdl->addComplexType('Stocking','stocking','struct','all','',
+	array( 	'ID' => array('name' => 'ParkID','type' => 'xsd:string'),
+			'ParkID' => array('name' => 'ParkID','type' => 'xsd:string'),
+			'Value' => array('name' => 'Value','type' => 'xsd:string'),
+			'Date' => array('name' => 'CreationDate','type' => 'xsd:string')
+		));
+		
 //Operacao: getAllParks
 $server->register("getAllParks",
     array(),
@@ -201,12 +239,22 @@ $server->register("insertNewPark",
 //Operacao: getCurrentStocking
 $server->register("getCurrentStocking",
     array("id" => "xsd:string"),
-    array("return" => "xsd:string"),
+    array("return" => "tns:Stocking"),
     $namespace,
     false,
     "rpc",
     "encoded",
     "Get Current Stocking");
+
+//Operacao: insertStocking
+$server->register("insertStocking",
+    array("stocking" => "tns:Stocking"),
+    array("return" => "xsd:string"),
+    $namespace,
+    false,
+    "rpc",
+    "encoded",
+    "Insert a Stocking");
 	
 //Operacao: helloWorld
 $server->register("helloWorld",	

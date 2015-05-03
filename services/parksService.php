@@ -62,40 +62,36 @@ function getParkByID($id){
 }
 
 //http://localhost:82/i-park/trunk/services/parksService.php/insertNewPark?wsdl
-function insertNewPark($park){
+function insertNewPark($id, $name, $company, $address, $zipCode, $zipLocation, $country, $latitude, $longitude, $phone, $openingHour, $closingHour, $pricePerHour, $floors, $disabledPlaces, $capacity, $creationDate){
 	
 	try {
 		
 		$db = new Database();
 
 		$sql = "INSERT INTO parks ";
-		$sql = $sql . "('Name','Company','Address','ZIPCode','ZIPLocation','Country','Latitude','Longitude', ";
-		$sql = $sql . "'Phone','OpeningHour','ClosingHour','PricePerHour','Floors','DisabledPlaces','Capacity','CreationDate') ";
+		$sql = $sql . "(Name,Company,Address,ZIPCode,ZIPLocation,Country,Latitude,Longitude, ";
+		$sql = $sql . "Phone,OpeningHour,ClosingHour,PricePerHour,Floors,DisabledPlaces,Capacity,CreationDate) ";
 		$sql = $sql . "VALUES ";
 		$sql = $sql . "(:name, :company, :address, :zipcode, :ziplocation, :country, :latitude, :longitude, ";
 		$sql = $sql . ":phone, :openingHour, :closingHour, :pricePerHour, :floors, :disabledPlaces, :capacity, NOW());";
 		
 		$stmt = $db->handler->prepare($sql);
 		
-		$sqlParams = Array(':name' => $park["Name"], ':company' => $park["Company"], ':address' => $park["Address"], ':zipcode' => $park["ZIPCode"], ':ziplocation' => $park["ZIPLocation"], ':country' => $park["Country"], ':latitude' => $park["Latitude"], ':longitude' => $park["Longitude"], ':phone'=> $park["Phone"], ':openingHour' => $park["OpeningHour"], ':closingHour' => $park["ClosingHour"], ':pricePerHour' => $park["PricePerHour"], ':floors' => $park["Floors"], ':disabledPlaces' => $park["DisabledPlaces"], ':capacity' => $park["Capacity"]);
-		
-		return "Name " . $park . "<br>" . parms($sql, $sqlParams);
-		
-		$stmt->bindParam(':name', $park["Name"]);
-		$stmt->bindParam(':company', $park["Company"]);
-		$stmt->bindParam(':address', $park["Address"]);
-		$stmt->bindParam(':zipcode', $park["ZIPCode"]);
-		$stmt->bindParam(':ziplocation', $park["ZIPLocation"]);
-		$stmt->bindParam(':country', $park["Country"]);
-		$stmt->bindParam(':latitude', $park["Latitude"]);
-		$stmt->bindParam(':longitude', $park["Longitude"]);
-		$stmt->bindParam(':phone', $park["Phone"]);
-		$stmt->bindParam(':openingHour', $park["OpeningHour"]);
-		$stmt->bindParam(':closingHour', $park["ClosingHour"]);
-		$stmt->bindParam(':pricePerHour', $park["PricePerHour"]);
-		$stmt->bindParam(':floors', $park["Floors"]);
-		$stmt->bindParam(':disabledPlaces', $park["DisabledPlaces"]);
-		$stmt->bindParam(':capacity', $park["Capacity"]);
+		$stmt->bindParam(':name', $name);
+		$stmt->bindParam(':company', $company);
+		$stmt->bindParam(':address', $address);
+		$stmt->bindParam(':zipcode', $zipCode);
+		$stmt->bindParam(':ziplocation', $zipLocation);
+		$stmt->bindParam(':country', $country);
+		$stmt->bindParam(':latitude', $latitude);
+		$stmt->bindParam(':longitude', $longitude);
+		$stmt->bindParam(':phone', $phone);
+		$stmt->bindParam(':openingHour', $openingHour);
+		$stmt->bindParam(':closingHour', $closingHour);
+		$stmt->bindParam(':pricePerHour', $pricePerHour);
+		$stmt->bindParam(':floors', $floors);
+		$stmt->bindParam(':disabledPlaces', $disabledPlaces);
+		$stmt->bindParam(':capacity', $capacity);
 		
 		$stmt->execute();
 		
@@ -105,7 +101,8 @@ function insertNewPark($park){
 		
 	}
 	
-	return "ok";
+	return "OK";
+	
 }
 
 //esta função permite obter a query final de uma prepared statement

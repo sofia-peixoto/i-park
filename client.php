@@ -73,7 +73,7 @@ function getParkByID(){
 
 function insertNewPark(){
 	
-	$park = Array('ID' => '', "Name" => "Parque 4", "Company" => "Empresa BlaBla", "Address" => "Rua sem saida", "ZIPCode" => "1234-123", "ZIPLocation" => "Cidade", "Country" => "Portugal", "Latitude" => "", "Longitude" => "", "Phone" => "123123123", "OpeningHour" => "10:00", "ClosingHour" => "21:00", "PricePerHour" => '1', "Floors" => '1', "DisabledPlaces" => '8', "Capacity" => '130', 'Active' => '1', 'CreationDate' => '');
+	$park = Array('ID' => '', "Name" => "Parque 3", "Company" => "Empresa Xpto", "Address" => "Rua sem saida", "ZIPCode" => "1234-123", "ZIPLocation" => "Cidade", "Country" => "Portugal", "Latitude" => "", "Longitude" => "", "Phone" => "123123123", "OpeningHour" => "10:00", "ClosingHour" => "21:00", "PricePerHour" => '1', "Floors" => '1', "DisabledPlaces" => '8', "Capacity" => '130', 'Active' => '1', 'CreationDate' => '');
 	
 	$client = new nusoap_client("http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php?wsdl", false);
 	$error  = $client->getError();
@@ -83,6 +83,70 @@ function insertNewPark(){
 	}
 	
 	$result = $client->call("insertNewPark", $park);
+	
+	if ($client->fault) {
+		
+		echo "<h2>Fault</h2><pre>";
+		print_r($result);
+		echo "</pre>";
+		
+	} else {
+		
+		$error = $client->getError();
+		
+		if ($error) {
+			echo "<h2>Error</h2><pre>" . $error . "</pre>";
+		} else {
+			print_r($result);
+		}
+		
+	}
+	
+}
+
+function updatePark(){
+	
+	$park = Array('ID' => '3', "Name" => "Parque 3", "Company" => "Empresa Xpto", "Address" => "Rua alterada", "ZIPCode" => "1234-123", "ZIPLocation" => "Cidade", "Country" => "Portugal", "Latitude" => "", "Longitude" => "", "Phone" => "123123123", "OpeningHour" => "10:00", "ClosingHour" => "21:00", "PricePerHour" => '0.8', "Floors" => '1', "DisabledPlaces" => '8', "Capacity" => '130', 'Active' => '1', 'CreationDate' => '');
+	
+	$client = new nusoap_client("http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php?wsdl", false);
+	$error  = $client->getError();
+	 
+	if ($error) {
+		echo "<h2>Constructor error</h2><pre>" . $error . "</pre>";
+	}
+	
+	$result = $client->call("updatePark", $park);
+	
+	if ($client->fault) {
+		
+		echo "<h2>Fault</h2><pre>";
+		print_r($result);
+		echo "</pre>";
+		
+	} else {
+		
+		$error = $client->getError();
+		
+		if ($error) {
+			echo "<h2>Error</h2><pre>" . $error . "</pre>";
+		} else {
+			print_r($result);
+		}
+		
+	}
+	
+}
+
+function enableDisablePark(){
+	
+	$client = new nusoap_client("http://" . $_SERVER['HTTP_HOST'] . "/i-park/trunk/Services/parksService.php?wsdl", false);
+	$error  = $client->getError();
+	 
+	if ($error) {
+		echo "<h2>Constructor error</h2><pre>" . $error . "</pre>";
+	}
+	
+	$result = $client->call("enableDisablePark", array('id' => '3', 'active' => true));
 	
 	if ($client->fault) {
 		
@@ -173,7 +237,9 @@ function insertStocking(){
 //getAllparks();
 //getParkByID();
 //insertNewPark();
-getCurrentStocking();
+//updatePark();
+enableDisablePark();
+//getCurrentStocking();
 //insertStocking();
 
 //echo "<h2>Request</h2><pre>" . htmlspecialchars($client->request, ENT_QUOTES) . "</pre>";

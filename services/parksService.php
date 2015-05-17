@@ -9,7 +9,7 @@ function helloWorld(){
 	return "Hello World!";
 }
 
-//http://localhost:82/i-park/trunk/services/parksService.php/getAllParks?wsdl
+//http://localhost/i-park/trunk/services/parksService.php/getAllParks?wsdl
 function getAllParks(){
 	$db = new Database();
 
@@ -45,7 +45,7 @@ function getAllParks(){
 	return $parks;
 }
 
-//http://localhost:82/i-park/trunk/services/parksService.php/getParkByID?wsdl
+//http://localhost/i-park/trunk/services/parksService.php/getParkByID?wsdl
 function getParkByID($id){
 	
 	$db = new Database();
@@ -61,7 +61,7 @@ function getParkByID($id){
 	return $result;
 }
 
-//http://localhost:82/i-park/trunk/services/parksService.php/insertNewPark?wsdl
+//http://localhost/i-park/trunk/services/parksService.php/insertNewPark?wsdl
 function insertNewPark($id, $name, $company, $address, $zipCode, $zipLocation, $country, $latitude, $longitude, $phone, $openingHour, $closingHour, $pricePerHour, $floors, $disabledPlaces, $capacity, $creationDate){
 	
 	try {
@@ -105,7 +105,80 @@ function insertNewPark($id, $name, $company, $address, $zipCode, $zipLocation, $
 	
 }
 
-//http://localhost:82/i-park/trunk/services/parksService.php/getCurrentStocking?wsdl
+//http://localhost/i-park/trunk/services/parksService.php/updatePark?wsdl
+function updatePark($id, $name, $company, $address, $zipCode, $zipLocation, $country, $latitude, $longitude, $phone, $openingHour, $closingHour, $pricePerHour, $floors, $disabledPlaces, $capacity, $creationDate){
+	
+	try {
+		
+		$db = new Database();
+
+		$sql = "UPDATE parks ";
+		$sql = $sql . "SET Name = :name, Company = :company, Address = :address, ZIPCode = :zipcode ";
+		$sql = $sql . ", ZIPLocation = :ziplocation, Country = :country, Latitude = :latitude, Longitude = :longitude";
+		$sql = $sql . ", Phone = :phone, OpeningHour = :openingHour, ClosingHour = :closingHour, PricePerHour = :pricePerHour";
+		$sql = $sql . ", Floors = :floors, DisabledPlaces = :disabledPlaces, Capacity = :capacity ";
+		$sql = $sql . "WHERE ID = :parkid";
+		
+		$stmt = $db->handler->prepare($sql);
+		
+		$stmt->bindParam(':name', $name);
+		$stmt->bindParam(':company', $company);
+		$stmt->bindParam(':address', $address);
+		$stmt->bindParam(':zipcode', $zipCode);
+		$stmt->bindParam(':ziplocation', $zipLocation);
+		$stmt->bindParam(':country', $country);
+		$stmt->bindParam(':latitude', $latitude);
+		$stmt->bindParam(':longitude', $longitude);
+		$stmt->bindParam(':phone', $phone);
+		$stmt->bindParam(':openingHour', $openingHour);
+		$stmt->bindParam(':closingHour', $closingHour);
+		$stmt->bindParam(':pricePerHour', $pricePerHour);
+		$stmt->bindParam(':floors', $floors);
+		$stmt->bindParam(':disabledPlaces', $disabledPlaces);
+		$stmt->bindParam(':capacity', $capacity);
+		$stmt->bindParam(':parkid', $id);
+		
+		$stmt->execute();
+		
+	} catch (Exception $e) {
+		
+		return "Exception " . $e;
+		
+	}
+	
+	return "OK";
+	
+}
+
+//http://localhost/i-park/trunk/services/parksService.php/enableDisablePark?wsdl
+function enableDisablePark($id, $active){
+	
+	try {
+		
+		$db = new Database();
+
+		$sql = "UPDATE parks ";
+		$sql = $sql . "SET Active = :active ";
+		$sql = $sql . "WHERE ID = :parkid";
+		
+		$stmt = $db->handler->prepare($sql);
+		
+		$stmt->bindParam(':active', $active);
+		$stmt->bindParam(':parkid', $id);
+		
+		$stmt->execute();
+		
+	} catch (Exception $e) {
+		
+		return "Exception " . $e;
+		
+	}
+	
+	return "OK";
+	
+}
+
+//http://localhost/i-park/trunk/services/parksService.php/getCurrentStocking?wsdl
 function getCurrentStocking($id){
 	
 	$db = new Database();
@@ -122,7 +195,7 @@ function getCurrentStocking($id){
 	
 }
 
-//http://localhost:82/i-park/trunk/services/parksService.php/insertStocking?wsdl
+//http://localhost/i-park/trunk/services/parksService.php/insertStocking?wsdl
 function insertStocking($parkid, $value, $date){
 	
 	try {
@@ -236,6 +309,26 @@ $server->register("insertNewPark",
     "encoded",
     "Insert a New Park");
 
+//Operacao: updatePark
+$server->register("updatePark",
+    array("park" => "tns:Park"),
+    array("return" => "xsd:string"),
+    $namespace,
+    false,
+    "rpc",
+    "encoded",
+    "Update a Park");
+
+//Operacao: enableDisablePark
+$server->register("enableDisablePark",
+    array("id" => "xsd:string", "active" => "xsd:boolean"),
+    array("return" => "xsd:string"),
+    $namespace,
+    false,
+    "rpc",
+    "encoded",
+    "Enable / Disable a Park");
+	
 //Operacao: getCurrentStocking
 $server->register("getCurrentStocking",
     array("id" => "xsd:string"),
